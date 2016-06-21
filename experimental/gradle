@@ -1,0 +1,24 @@
+task printAllDependenciesLocalPath << {
+    configurations.compile.each { println it }
+    println configurations.compile.asFileTree.properties.collect { it }.join('\n')
+}
+
+task printObjAttribute << {
+    println configurations.compile.properties.collect { it }.join('\n')
+}
+
+task printAllDependenciesMavenInfo << {
+    println "All Dependencies:"
+    allprojects.each { p ->
+        println()
+        println " $p.name ".center(60, '*')
+        println()
+        p.configurations.all.findAll { !it.allDependencies.empty }.each { c ->
+            println " ${c.name} ".center(60, '-')
+            c.allDependencies.each { dep ->
+                println "$dep.group:$dep.name:$dep.version"
+            }
+            println "-" * 60
+        }
+    }
+}
